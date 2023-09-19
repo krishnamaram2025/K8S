@@ -11,10 +11,10 @@ This project is implemented to touch and feel of Micro Services architecture wit
 # K8S Cluster set up using Kubeadm 
 * Step 1: install docker on all machines
   ```
-    git clone https://github.com/krishnamaram2/container-orchestrator.git
-    sudo sh container-orchestrator/src/master_worker.sh
-    https://kubernetes.io/docs/setup/production-environment/container-runtimes/#docker
-    ```
+  git clone https://github.com/krishnamaram2/container-orchestrator.git
+  sudo sh container-orchestrator/src/master_worker.sh
+  https://kubernetes.io/docs/setup/production-environment/container-runtimes/#docker
+  ```
 * step 2: install kubeadm,kubectl,kubelet on all machines
     ```
     https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
