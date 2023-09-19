@@ -1,15 +1,12 @@
 # Project Title
-
 This project is implemented to touch and feel of Micro Services architecture with containerized apps
 
-Pre-Requisites
----------------------------
-
-$curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
-
-$sudo chmod +x kubectl
-
-$sudo mv kubectl /usr/bin
+# Pre-Requisites
+  ```
+  curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+  sudo chmod +x kubectl
+  sudo mv kubectl /usr/bin
+```
 
 # K8S Cluster set up using Kubeadm 
 * Step 1: install docker on all machines
@@ -54,36 +51,36 @@ $sudo mv kubectl /usr/bin
     copy admin.conf from /etc/kubernetes/admin.conf(master node)
     kubectl get nodes -o wide --kubeconfig admin.conf
     ```
-* Microservices Deployments
-```
-git clone https://github.com/krishnamaram2/container-orchestrator.git
-cd container-orchestrator/src/flask
-kubectl create -f flask-kubeadm-deployment.yml
-cd container-orchestrator/src/mysql
-kubectl create -f mysql-kubeadm-deployment.yml
-```
+* Step 8: Microservices Deployments
+  ```
+  git clone https://github.com/krishnamaram2/container-orchestrator.git
+  cd container-orchestrator/src/flask
+  kubectl create -f flask-kubeadm-deployment.yml
+  cd container-orchestrator/src/mysql
+  kubectl create -f mysql-kubeadm-deployment.yml
+  ```
 
 # K8S Cluster set up using Minikube(Note: Install and set up on Local Machine)
 * Step 1: Pre-Requisites
-    ```
-    curl -fsSL https://get.docker.com -o get-docker.sh
-    sudo sh get-docker.sh
-    sudo systemctl start docker
-    sudo usermod -aG docker $(whoami) 
-    sudo chmod 666 /var/run/docker.sock
-    ```
+  ```
+  curl -fsSL https://get.docker.com -o get-docker.sh
+  sudo sh get-docker.sh
+  sudo systemctl start docker
+  sudo usermod -aG docker $(whoami) 
+  sudo chmod 666 /var/run/docker.sock
+  ```
 * Step 2: Setup K8S cluster
-```
-https://minikube.sigs.k8s.io/docs/start/
-```
+  ```
+  https://minikube.sigs.k8s.io/docs/start/
+  ```
 * Step 3: Microservices Deployments
-```
-git clone https://github.com/krishnamaram2/container-orchestrator.git
-cd container-orchestrator/src/flask
-kubectl create -f flask-kubeadm-deployment.yml
-cd container-orchestrator/src/mysql
-kubectl create -f mysql-kubeadm-deployment.yml
-```
+  ```
+  git clone https://github.com/krishnamaram2/container-orchestrator.git
+  cd container-orchestrator/src/flask
+  kubectl create -f flask-kubeadm-deployment.yml
+  cd container-orchestrator/src/mysql
+  kubectl create -f mysql-kubeadm-deployment.yml
+  ```
 
 # K8S Cluster set up using AWS EKS
 
