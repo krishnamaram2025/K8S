@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+    name: my-pod
+    labels: 
+      env: Test
+      server: web
+spec:
+     containers:
+     - name: http 
+       image: http
+       ports:
+       - containerPort: 80
