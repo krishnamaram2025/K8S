@@ -2,8 +2,14 @@
 This project is implemented to touch and feel of Micro Services architecture with containerized apps
 
 # References
-https://www.linuxtechi.com/install-kubernetes-on-ubuntu-22-04/
+```
 https://github.com/cloudstones/container-orchestrator/tree/master
+```
+
+# K8S Cluster setup
+```
+https://www.linuxtechi.com/install-kubernetes-on-ubuntu-22-04/
+```
 
 # Argo CD
 ```
