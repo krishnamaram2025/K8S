@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: idp-frontend
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/krishnamaram2025/K8S.git       
+    targetRevision: master        
+    path: app    
+  destination:
+    server: https://kubernetes.default.svc   
+    namespace: idp        
+  syncPolicy:
+  syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true
+      selfHeal: true
