@@ -1,6 +1,11 @@
 # Project Title
 This project is implemented to touch and feel of Micro Services architecture with containerized apps
 
+# Infrastructure Set Up
+```
+https://github.com/krishnamaram2025/Terraform/blob/master/k8s-kubeadm/README.md
+```
+
 # K8S Cluster setup
 ```
 https://www.linuxtechi.com/install-kubernetes-on-ubuntu-22-04/
