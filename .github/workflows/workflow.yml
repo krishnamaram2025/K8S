@@ -23,4 +23,4 @@ jobs:
           kubectl apply -f ${{ env.KUBE_MANIFEST_PATH }}
         env:
           KUBECONFIG: ${{ secrets.KUBECONFIG }}
-          KUBE_MANIFEST_PATH: ${{ env.KUBE_MANIFEST_PATH }}
+          # KUBE_MANIFEST_PATH: ${{ env.KUBE_MANIFEST_PATH }}
