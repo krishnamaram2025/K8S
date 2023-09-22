@@ -20,7 +20,7 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-          kubectl apply -f ${{ env.KUBE_MANIFEST_PATH }}
+          kubectl apply -f ./test/test.yml
         env:
           KUBECONFIG: ${{ secrets.KUBECONFIG }}
           # KUBE_MANIFEST_PATH: ${{ env.KUBE_MANIFEST_PATH }}
