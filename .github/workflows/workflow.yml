@@ -18,7 +18,7 @@ jobs:
         with:
           kubeconfig: ${{ secrets.KUBECONFIG }}
 
-      - name: Deploy to Kubernetes
+      - name: Deploy to Kubernetes file
         run: |
           kubectl apply -f ./test/test.yml
           with:
