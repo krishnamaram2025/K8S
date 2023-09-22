@@ -18,8 +18,9 @@ jobs:
         with:
           kubeconfig: ${{ secrets.KUBECONFIG }}
 
-      - name: Deploy to Kubernetes stuff
+      - name: Deploy to Kubernetes
         run: |
-          kubectl apply -f test/k8s_manifests.yml
+          kubectl apply -f ${{ env.KUBE_MANIFEST_PATH }}
         env:
           KUBECONFIG: ${{ secrets.KUBECONFIG }}
+          KUBE_MANIFEST_PATH: path/to/your/kubernetes/manifests
