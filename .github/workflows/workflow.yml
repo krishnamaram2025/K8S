@@ -20,6 +20,6 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-          kubectl apply -f .github/workflows/k8s_manifests.yml
+          kubectl apply -f test/k8s_manifests.yml
         env:
           KUBECONFIG: ${{ secrets.KUBECONFIG }}
