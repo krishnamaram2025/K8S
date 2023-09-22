@@ -18,7 +18,7 @@ jobs:
         with:
           kubeconfig: ${{ secrets.KUBECONFIG }}
 
-      - name: Deploy to Kubernetes
+      - name: Deploy to Kubernetes stuff
         run: |
           kubectl apply -f test/k8s_manifests.yml
         env:
