@@ -20,9 +20,9 @@ jobs:
 
       - name: Deploy to Kubernetes file
         run: |
-          sudo kubectl apply -f ./test/test.yml
+          sudo kubectl apply -f test.yml
           with:
             kubeconfig: ${{ secrets.KUBECONFIG }}
-        # env:
-        #   KUBECONFIG: ${{ secrets.KUBECONFIG }}
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
           # KUBE_MANIFEST_PATH: ${{ env.KUBE_MANIFEST_PATH }}
