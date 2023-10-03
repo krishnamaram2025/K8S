@@ -58,19 +58,26 @@ This project is implemented to touch and feel of Micro Services architecture wit
   sudo systemctl restart containerd
   sudo systemctl enable containerd
   ```
-* Step 3: Add kubernetes repo on all nodes
+* Step 3:Install CNI plugins
+  ```
+  wget https://github.com/containernetworking/plugins/releases/download/v1.1.1/cni-plugins-linux-amd64-v1.1.1.tgz
+  tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.1.1.tgz
+  systemctl daemon-reload
+  systemctl restart docker
+  ```
+* Step 4: Add kubernetes repo on all nodes
   ```
   curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmour -o /etc/apt/trusted.gpg.d/kubernetes-xenial.gpg
   sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
   ```
-* Step 4: install kubelet kubeadm kubectl on all nodes
+* Step 5: install kubelet kubeadm kubectl on all nodes
   ```
   sudo apt update
   sudo apt install -y kubelet kubeadm kubectl
   sudo apt-mark hold kubelet kubeadm kubectl
   echo 1 > /proc/sys/net/ipv4/ip_forward
   ```
-* Step 5: Initialize Kubernetes Cluster with Kubeadm on master node
+* Step 6: Initialize Kubernetes Cluster with Kubeadm on master node
   ```
   kubeadm init
   mkdir -p $HOME/.kube
@@ -79,11 +86,11 @@ This project is implemented to touch and feel of Micro Services architecture wit
   kubectl cluster-info
   kubectl get nodes
   ```
-* Step 6: Join the worker node to the cluster
+* Step 7: Join the worker node to the cluster
   ```
   sudo kubeadm join k8smaster.example.net:6443 --token vt4ua6.wcma2y8pl4menxh2 \
   ```
-* Step 7: Install Calico Network Plugin
+* Step 8: Install Calico Network Plugin
   ```
   kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico.yaml
   kubectl get pods -n kube-system
