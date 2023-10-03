@@ -7,7 +7,11 @@ This project is implemented to touch and feel of Micro Services architecture wit
   ```
 
 # K8S Cluster setup 
-* Step 1: Add kernel Parameters on all nodes
+* Step 1: Disable Swap & Add kernel Parameters on all nodes
+  ```
+  sudo swapoff -a
+  sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+  ```
   ```
   sudo tee /etc/modules-load.d/containerd.conf <<EOF
   overlay
@@ -22,7 +26,11 @@ This project is implemented to touch and feel of Micro Services architecture wit
   EOF
   sudo sysctl --system
   ```
-* Step 2: Install Containerd runtime on all nodes
+* Step 2: Option 1: CRI:Install Dockerd as runtime on all nodes
+  ```
+  
+  ```
+* Step 2: Option 2: CRI: Install Containerd as runtime on all nodes
   ```
   sudo apt update
   sudo apt install -y curl gnupg2 software-properties-common apt-transport-https ca-certificates
