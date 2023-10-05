@@ -6,7 +6,8 @@ This project is implemented to touch and feel of Micro Services architecture wit
   https://github.com/krishnamaram2025/Terraform/blob/master/k8s-kubeadm/README.md
   ```
 
-# K8S Cluster setup 
+# K8S Cluster setup using kubeadm tool
+# On Master node
 * Step 1: Disable Swap & Add kernel Parameters on all nodes
   ```
   sudo swapoff -a
@@ -19,14 +20,33 @@ This project is implemented to touch and feel of Micro Services architecture wit
   EOF
   sudo modprobe overlay
   sudo modprobe br_netfilter
+  ```
+  ```
   sudo tee /etc/sysctl.d/kubernetes.conf <<EOF
   net.bridge.bridge-nf-call-ip6tables = 1
   net.bridge.bridge-nf-call-iptables = 1
   net.ipv4.ip_forward = 1
   EOF
-  sudo sysctl --system
   ```
-* Step 2: Option 1: CRI:Install Dockerd as runtime on all nodes
+  ```
+  sudo sysctl --system
+  echo 1 > /proc/sys/net/ipv4/ip_forward
+  ```
+* Step 2: Install Docker
+  ```
+  sudo apt-get update
+  sudo apt-get install ca-certificates curl gnupg
+  sudo install -m 0755 -d /etc/apt/keyrings
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+  sudo chmod a+r /etc/apt/keyrings/docker.gpg
+  echo \
+    "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+    "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+    sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  sudo apt-get update
+  sudo apt-get install docker-ce -y
+  ```
+* Step 3: Option 1: CRI:Install Dockerd as runtime on all nodes
   ```
   VER=$(curl -s https://api.github.com/repos/Mirantis/cri-dockerd/releases/latest|grep tag_name | cut -d '"' -f 4|sed 's/v//g')
   echo $VER
@@ -45,7 +65,7 @@ This project is implemented to touch and feel of Micro Services architecture wit
   systemctl enable --now cri-docker.socket
   systemctl status cri-docker.socket
   ```
-* Step 2: Option 2: CRI: Install Containerd as runtime on all nodes
+* Step 3: Option 2: CRI: Install Containerd as runtime on all nodes
   ```
   sudo apt update
   sudo apt install -y curl gnupg2 software-properties-common apt-transport-https ca-certificates
@@ -75,7 +95,6 @@ This project is implemented to touch and feel of Micro Services architecture wit
   sudo apt update
   sudo apt install -y kubelet kubeadm kubectl
   sudo apt-mark hold kubelet kubeadm kubectl
-  echo 1 > /proc/sys/net/ipv4/ip_forward
   ```
 * Step 6: Initialize Kubernetes Cluster with Kubeadm on master node
   ```
