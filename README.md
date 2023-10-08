@@ -78,8 +78,8 @@ This project is implemented to touch and feel of Micro Services architecture wit
   ```
 * Step 6:Install CNI plugins
   ```
-  wget https://github.com/containernetworking/plugins/releases/download/v1.1.1/cni-plugins-linux-amd64-v1.1.1.tgz
-  tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.1.1.tgz
+  sudo wget https://github.com/containernetworking/plugins/releases/download/v1.1.1/cni-plugins-linux-amd64-v1.1.1.tgz
+  sudo tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.1.1.tgz
   sudo systemctl daemon-reload
   sudo systemctl restart docker
   ```
@@ -187,14 +187,14 @@ This project is implemented to touch and feel of Micro Services architecture wit
   ```
 * Step 6:Install CNI plugins
   ```
-  wget https://github.com/containernetworking/plugins/releases/download/v1.1.1/cni-plugins-linux-amd64-v1.1.1.tgz
-  tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.1.1.tgz
-  systemctl daemon-reload
-  systemctl restart docker
+  sudo wget https://github.com/containernetworking/plugins/releases/download/v1.1.1/cni-plugins-linux-amd64-v1.1.1.tgz
+  sudo tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.1.1.tgz
+  sudo systemctl daemon-reload
+  sudo systemctl restart docker
   ```
 * Step 7: Initialize Kubernetes Cluster with Kubeadm on master node
   ```
-  kubeadm init --cri-soket unix:///var/run/cri-dockerd.sock
+  sudo kubeadm init --cri-socket unix:///var/run/cri-dockerd.sock
   ```
   ```
   mkdir -p $HOME/.kube
