@@ -80,8 +80,8 @@ This project is implemented to touch and feel of Micro Services architecture wit
   ```
   wget https://github.com/containernetworking/plugins/releases/download/v1.1.1/cni-plugins-linux-amd64-v1.1.1.tgz
   tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.1.1.tgz
-  systemctl daemon-reload
-  systemctl restart docker
+  sudo systemctl daemon-reload
+  sudo systemctl restart docker
   ```
 * Step 7: Initialize Kubernetes Cluster with Kubeadm on master node
   ```
