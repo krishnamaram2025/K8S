@@ -172,7 +172,7 @@ This project is implemented to touch and feel of Micro Services architecture wit
   ```
 * Step 6: run below to join worker node to cluster
   ```
-  kubeadm join 10.0.0.231:6443 --token fkfxh4.2srr8tc1xr7ladn1 \
+  kubeadm join 10.0.0.231:6443 --cri-socket unix:///var/run/cri-dockerd.sock --token fkfxh4.2srr8tc1xr7ladn1 \
         --discovery-token-ca-cert-hash sha256:470ea5893532053f4d51ae275acb9920299e2e2744c69926f60781ce23326698
   ```
 # Argo CD server set up
