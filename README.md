@@ -204,7 +204,7 @@ This project is implemented to touch and feel of Micro Services architecture wit
   ```
 * Step 2: manifests deployment from argocd 
   ```
-  git clone https://github.com/krishnamaram2025/K8S.git &&  cd K8S/manifests && cat application.yml
+  git clone https://github.com/krishnamaram2025/K8S.git &&  cd K8S/argocd && cat application.yml
   Argo CD UI => Applications => NEW App => EDIT AS YAML => Create
   ```
 
