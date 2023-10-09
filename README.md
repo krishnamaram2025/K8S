@@ -180,18 +180,19 @@ This project is implemented to touch and feel of Micro Services architecture wit
   ```
   kubectl create namespace argocd
   kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-  git clone https://github.com/krishnamaram2025/K8S.git &&  cd K8S/deployments/argocd
-  kubectl apply -f service.yml
   ```
 * Step 2: To fetch default password for admin user
   ```
   kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}"| base64 -d
   ```
+* Step 3: Deploy Argo CD service
+  ```
+  git clone https://github.com/krishnamaram2025/K8S.git &&  cd K8S/deployments/argocd && kubectl apply -f service.yml
+  ```
 * Step 3: Access Argo CD UI
   ```
-  IP_ADRRESS:30080
+  MASTER_NODE_IP:30080
   ```
-
 # References
   ```
   https://www.linuxtechi.com/install-kubernetes-on-ubuntu-22-04/
