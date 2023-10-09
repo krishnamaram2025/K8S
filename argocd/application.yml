@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: idp-frontend
+  name: csp
   namespace: argocd
 spec:
   project: default
