@@ -101,7 +101,6 @@ This project is implemented to touch and feel of Micro Services architecture wit
   ```
   kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico.yaml
   ```
-
 # On Worker nodes
 * Step 1: Disable Swap & Add kernel Parameters on all nodes
   ```
@@ -141,37 +140,24 @@ This project is implemented to touch and feel of Micro Services architecture wit
   sudo apt-get update
   sudo apt-get install docker-ce -y
   ```
-* Step 3: Option 1: CRI:Install Dockerd as runtime on all nodes
+* Step 3: CRI:Install Dockerd as runtime on all nodes
   ```
   VER=$(curl -s https://api.github.com/repos/Mirantis/cri-dockerd/releases/latest|grep tag_name | cut -d '"' -f 4|sed 's/v//g')
   echo $VER
-  mkdir /tmp/packages
+  sudo mkdir /tmp/packages
   cd packages/
-  wget https://github.com/Mirantis/cri-dockerd/releases/download/v${VER}/cri-dockerd-${VER}.amd64.tgz
-  tar xvf cri-dockerd-${VER}.amd64.tgz
+  sudo wget https://github.com/Mirantis/cri-dockerd/releases/download/v${VER}/cri-dockerd-${VER}.amd64.tgz
+  sudo tar xvf cri-dockerd-${VER}.amd64.tgz
   cp cri-dockerd/cri-dockerd /usr/local/bin/
   cri-dockerd --version
   wget https://raw.githubusercontent.com/Mirantis/cri-dockerd/master/packaging/systemd/cri-docker.service
   wget https://raw.githubusercontent.com/Mirantis/cri-dockerd/master/packaging/systemd/cri-docker.socket
   sudo mv cri-docker.socket cri-docker.service /etc/systemd/system/
   sudo sed -i -e 's,/usr/bin/cri-dockerd,/usr/local/bin/cri-dockerd,' /etc/systemd/system/cri-docker.service
-  systemctl daemon-reload
-  systemctl enable cri-docker.service
-  systemctl enable --now cri-docker.socket
-  systemctl status cri-docker.socket
-  ```
-* Step 3: Option 2: CRI: Install Containerd as runtime on all nodes
-  ```
-  sudo apt update
-  sudo apt install -y curl gnupg2 software-properties-common apt-transport-https ca-certificates
-  sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmour -o /etc/apt/trusted.gpg.d/docker.gpg
-  sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-  sudo apt update
-  sudo apt install -y containerd.io
-  containerd config default | sudo tee /etc/containerd/config.toml >/dev/null 2>&1
-  sudo sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
-  sudo systemctl restart containerd
-  sudo systemctl enable containerd
+  sudo systemctl daemon-reload
+  sudo systemctl enable cri-docker.service
+  sudo systemctl enable --now cri-docker.socket
+  sudo systemctl status cri-docker.socket
   ```
 * Step 4: Add kubernetes repo on all nodes
   ```
@@ -184,29 +170,10 @@ This project is implemented to touch and feel of Micro Services architecture wit
   sudo apt install -y kubelet kubeadm kubectl
   sudo apt-mark hold kubelet kubeadm kubectl
   ```
-* Step 6:Install CNI plugins
+* Step 6: run below to join worker node to cluster
   ```
-  sudo wget https://github.com/containernetworking/plugins/releases/download/v1.1.1/cni-plugins-linux-amd64-v1.1.1.tgz
-  sudo tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.1.1.tgz
-  sudo systemctl daemon-reload
-  sudo systemctl restart docker
-  ```
-* Step 7: Initialize Kubernetes Cluster with Kubeadm on master node
-  ```
-  sudo kubeadm init --cri-socket unix:///var/run/cri-dockerd.sock
-  ```
-  ```
-  mkdir -p $HOME/.kube
-  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-  sudo chown $(id -u):$(id -g) $HOME/.kube/config
-  ```
-* Step 8: copy the above output to join worker node to cluster
-  ```
-  sudo kubeadm join
-  ```
-* Step 9: Install Calico Network Plugin
-  ```
-  kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico.yaml
+  kubeadm join 10.0.0.231:6443 --token fkfxh4.2srr8tc1xr7ladn1 \
+        --discovery-token-ca-cert-hash sha256:470ea5893532053f4d51ae275acb9920299e2e2744c69926f60781ce23326698
   ```
 # Argo CD server set up
 * Step 1: execute the below commands on master node
