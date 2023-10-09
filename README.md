@@ -183,7 +183,7 @@ This project is implemented to touch and feel of Micro Services architecture wit
   ```
 * Step 2: Deploy Argo CD service
   ```
-  git clone https://github.com/krishnamaram2025/K8S.git &&  cd argocd && kubectl apply -f service.yml
+  git clone https://github.com/krishnamaram2025/K8S.git &&  cd K8S/argocd && kubectl apply -f service.yml
   ```
 * Step 3: To fetch default password for admin user
   ```
@@ -193,14 +193,19 @@ This project is implemented to touch and feel of Micro Services architecture wit
   ```
   MASTER_NODE_IP:30080
   ```
+* Step 5: Authenticate k8s manifests repo
+  ```
+  Argo CD UI => Settings => Repositories => Connect Repo => Select HTTPs
+  ```
 # Deployments
-* Step 1: ingress server deployments
+* Step 1: ingress server deployments manually
   ```
   
   ```
-* Step 2: manifests deployment from argocd
+* Step 2: manifests deployment from argocd 
   ```
-  
+  git clone https://github.com/krishnamaram2025/K8S.git &&  cd K8S/manifests && cat application.yml
+  Argo CD UI => Applications => NEW App => EDIT AS YAML => Create
   ```
 
 # References
