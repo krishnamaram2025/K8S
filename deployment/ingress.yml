@@ -8,19 +8,19 @@ spec:
   ingressClassName: nginx
   rules:
     - host: cloudstones.org
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: idp-ui-svc
-                port:
-                  number: 80
-          - path: /epc
-            pathType: Prefix
-            backend:
-              service:
-                name: epc-ui-svc
-                port:
-                  number: 80
+      # http:
+      #   paths:
+      #     - path: /
+      #       pathType: Prefix
+      #       backend:
+      #         service:
+      #           name: idp-ui-svc
+      #           port:
+      #             number: 80
+      #     - path: /epc
+      #       pathType: Prefix
+      #       backend:
+      #         service:
+      #           name: epc-ui-svc
+      #           port:
+      #             number: 80
