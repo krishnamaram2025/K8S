@@ -200,6 +200,7 @@ This project is implemented to touch and feel of Micro Services architecture wit
 # Deployments
 * Step 1: Nginx ingress server deployments manually
   ```
+  kubectl create namespace idp
   git clone https://github.com/nginxinc/kubernetes-ingress.git --branch v3.3.0 & cd kubernetes-ingress/deployments
   kubectl apply -f common/ns-and-sa.yaml
   kubectl apply -f rbac/rbac.yaml
