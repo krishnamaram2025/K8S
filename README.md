@@ -187,12 +187,22 @@ This project is implemented to touch and feel of Micro Services architecture wit
   ```
 * Step 3: Deploy Argo CD service
   ```
-  git clone https://github.com/krishnamaram2025/K8S.git &&  cd K8S/deployments/argocd && kubectl apply -f service.yml
+  git clone https://github.com/krishnamaram2025/K8S.git &&  cd argocd && kubectl apply -f service.yml
   ```
 * Step 3: Access Argo CD UI
   ```
   MASTER_NODE_IP:30080
   ```
+# Deployments
+* Step 1: ingress server deployments
+  ```
+  
+  ```
+* Step 2: manifests deployment from argocd
+  ```
+  
+  ```
+
 # References
   ```
   https://www.linuxtechi.com/install-kubernetes-on-ubuntu-22-04/
