@@ -198,7 +198,7 @@ This project is implemented to touch and feel of Micro Services architecture wit
   Argo CD UI => Settings => Repositories => Connect Repo => Select HTTPs
   ```
 # Deployments
-* Step 1: ingress server deployments manually
+* Step 1: Nginx ingress server deployments manually
   ```
   
   ```
