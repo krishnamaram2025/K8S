@@ -8,13 +8,13 @@ spec:
   source:
     repoURL: https://github.com/krishnamaram2025/K8S.git       
     targetRevision: master        
-    path: app    
+    path: deployment  
   destination:
     server: https://kubernetes.default.svc   
     namespace: idp        
   syncPolicy:
   syncOptions:
       - CreateNamespace=true
-    automated:
-      prune: true
-      selfHeal: true
+  automated:
+    prune: true
+    selfHeal: true
