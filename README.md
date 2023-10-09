@@ -209,8 +209,6 @@ This project is implemented to touch and feel of Micro Services architecture wit
 * Step 9: Install Calico Network Plugin
   ```
   kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico.yaml
-  kubectl get pods -n kube-system
-  kubectl get nodes
   ```
 # Argo CD server set up
 * Step 1: execute the below commands on master node
