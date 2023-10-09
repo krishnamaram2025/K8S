@@ -85,7 +85,7 @@ This project is implemented to touch and feel of Micro Services architecture wit
   ```
 * Step 7: Initialize Kubernetes Cluster with Kubeadm on master node
   ```
-  kubeadm init --cri-soket unix:///var/run/cri-dockerd.sock
+  kubeadm init --cri-socket unix:///var/run/cri-dockerd.sock
   ```
   ```
   mkdir -p $HOME/.kube
