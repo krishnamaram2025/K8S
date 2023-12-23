@@ -1,5 +1,11 @@
 # Project Title
 This project is implemented to touch and feel of Micro Services architecture with containerized apps
+```
+git clone https://github.com/krishnamaram2025/K8S.git
+docker image build -t kri .
+docker container run -it -d -p 8080 kri
+http://PUBLIC_IP:8080/Student
+```
 # Pre-Requisites
 * Step 1: Install kubectl CLI to interact with K8S APIs
 ```
@@ -53,6 +59,7 @@ sudo chmod 0755 $HOME/.kube/config
 kubectl apply -f  /home/centos/configuration-manager/src/opsstack/weavenet.yml
 kubectl taint nodes --all node-role.kubernetes.io/master-
 kubectl create -f webapp.yaml
+http://LOAD_BALANCER:8080/Student
 ```
 # Set up multi node K8S Cluster using Kubeadm 
 * Step 1: install docker on all machines
