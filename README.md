@@ -1,226 +1,94 @@
 # Project Title
+
 This project is implemented to touch and feel of Micro Services architecture with containerized apps
 
-# Infrastructure Set Up
-  ```
-  https://github.com/krishnamaram2025/Terraform/blob/master/k8s-kubeadm/README.md
-  ```
+Pre-Requisites
+---------------------------
 
-# K8S Cluster setup using kubeadm tool
-# On Master nodes
-* Step 1: Disable Swap & Add kernel Parameters on all nodes
-  ```
-  sudo swapoff -a
-  sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
-  ```
-  ```
-  sudo tee /etc/modules-load.d/containerd.conf <<EOF
-  overlay
-  br_netfilter
-  EOF
-  sudo modprobe overlay
-  sudo modprobe br_netfilter
-  ```
-  ```
-  sudo tee /etc/sysctl.d/kubernetes.conf <<EOF
-  net.bridge.bridge-nf-call-ip6tables = 1
-  net.bridge.bridge-nf-call-iptables = 1
-  net.ipv4.ip_forward = 1
-  EOF
-  ```
-  ```
-  sudo sysctl --system
-  echo 1 > /proc/sys/net/ipv4/ip_forward
-  ```
-* Step 2: Install Docker
-  ```
-  sudo apt-get update
-  sudo apt-get install ca-certificates curl gnupg
-  sudo install -m 0755 -d /etc/apt/keyrings
-  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-  sudo chmod a+r /etc/apt/keyrings/docker.gpg
-  echo \
-    "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-    "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
-    sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-  sudo apt-get update
-  sudo apt-get install docker-ce -y
-  ```
-* Step 3: CRI:Install Dockerd as runtime on all nodes
-  ```
-  VER=$(curl -s https://api.github.com/repos/Mirantis/cri-dockerd/releases/latest|grep tag_name | cut -d '"' -f 4|sed 's/v//g')
-  echo $VER
-  sudo mkdir /tmp/packages
-  cd packages/
-  sudo wget https://github.com/Mirantis/cri-dockerd/releases/download/v${VER}/cri-dockerd-${VER}.amd64.tgz
-  sudo tar xvf cri-dockerd-${VER}.amd64.tgz
-  cp cri-dockerd/cri-dockerd /usr/local/bin/
-  cri-dockerd --version
-  wget https://raw.githubusercontent.com/Mirantis/cri-dockerd/master/packaging/systemd/cri-docker.service
-  wget https://raw.githubusercontent.com/Mirantis/cri-dockerd/master/packaging/systemd/cri-docker.socket
-  sudo mv cri-docker.socket cri-docker.service /etc/systemd/system/
-  sudo sed -i -e 's,/usr/bin/cri-dockerd,/usr/local/bin/cri-dockerd,' /etc/systemd/system/cri-docker.service
-  sudo systemctl daemon-reload
-  sudo systemctl enable cri-docker.service
-  sudo systemctl enable --now cri-docker.socket
-  sudo systemctl status cri-docker.socket
-  ```
-* Step 4: Add kubernetes repo on all nodes
-  ```
-  curl -fsSL  https://packages.cloud.google.com/apt/doc/apt-key.gpg|sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/k8s.gpg
-  echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
-  ```
-* Step 5: install kubelet kubeadm kubectl on all nodes
-  ```
-  sudo apt update
-  sudo apt install -y kubelet kubeadm kubectl
-  sudo apt-mark hold kubelet kubeadm kubectl
-  ```
-* Step 6:Install CNI plugins
-  ```
-  sudo wget https://github.com/containernetworking/plugins/releases/download/v1.1.1/cni-plugins-linux-amd64-v1.1.1.tgz
-  sudo tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.1.1.tgz
-  sudo systemctl daemon-reload
-  sudo systemctl restart docker
-  ```
-* Step 7: Initialize Kubernetes Cluster with Kubeadm on master node
-  ```
-  kubeadm init --cri-socket unix:///var/run/cri-dockerd.sock
-  ```
-  ```
-  mkdir -p $HOME/.kube
-  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-  sudo chown $(id -u):$(id -g) $HOME/.kube/config
-  ```
-* Step 8: copy the above output to join worker node to cluster
-  ```
-  kubeadm join 10.0.0.231:6443 --token fkfxh4.2srr8tc1xr7ladn1 \
-        --discovery-token-ca-cert-hash sha256:470ea5893532053f4d51ae275acb9920299e2e2744c69926f60781ce23326698
-  ```
-* Step 9: Install Calico Network Plugin
-  ```
-  kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico.yaml
-  ```
-# On Worker nodes
-* Step 1: Disable Swap & Add kernel Parameters on all nodes
-  ```
-  sudo swapoff -a
-  sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
-  ```
-  ```
-  sudo tee /etc/modules-load.d/containerd.conf <<EOF
-  overlay
-  br_netfilter
-  EOF
-  sudo modprobe overlay
-  sudo modprobe br_netfilter
-  ```
-  ```
-  sudo tee /etc/sysctl.d/kubernetes.conf <<EOF
-  net.bridge.bridge-nf-call-ip6tables = 1
-  net.bridge.bridge-nf-call-iptables = 1
-  net.ipv4.ip_forward = 1
-  EOF
-  ```
-  ```
-  sudo sysctl --system
-  echo 1 > /proc/sys/net/ipv4/ip_forward
-  ```
-* Step 2: Install Docker
-  ```
-  sudo apt-get update
-  sudo apt-get install ca-certificates curl gnupg
-  sudo install -m 0755 -d /etc/apt/keyrings
-  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-  sudo chmod a+r /etc/apt/keyrings/docker.gpg
-  echo \
-    "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-    "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
-    sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-  sudo apt-get update
-  sudo apt-get install docker-ce -y
-  ```
-* Step 3: CRI:Install Dockerd as runtime on all nodes
-  ```
-  VER=$(curl -s https://api.github.com/repos/Mirantis/cri-dockerd/releases/latest|grep tag_name | cut -d '"' -f 4|sed 's/v//g')
-  echo $VER
-  sudo mkdir /tmp/packages
-  cd packages/
-  sudo wget https://github.com/Mirantis/cri-dockerd/releases/download/v${VER}/cri-dockerd-${VER}.amd64.tgz
-  sudo tar xvf cri-dockerd-${VER}.amd64.tgz
-  cp cri-dockerd/cri-dockerd /usr/local/bin/
-  cri-dockerd --version
-  wget https://raw.githubusercontent.com/Mirantis/cri-dockerd/master/packaging/systemd/cri-docker.service
-  wget https://raw.githubusercontent.com/Mirantis/cri-dockerd/master/packaging/systemd/cri-docker.socket
-  sudo mv cri-docker.socket cri-docker.service /etc/systemd/system/
-  sudo sed -i -e 's,/usr/bin/cri-dockerd,/usr/local/bin/cri-dockerd,' /etc/systemd/system/cri-docker.service
-  sudo systemctl daemon-reload
-  sudo systemctl enable cri-docker.service
-  sudo systemctl enable --now cri-docker.socket
-  sudo systemctl status cri-docker.socket
-  ```
-* Step 4: Add kubernetes repo on all nodes
-  ```
-  curl -fsSL  https://packages.cloud.google.com/apt/doc/apt-key.gpg|sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/k8s.gpg
-  echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
-  ```
-* Step 5: install kubelet kubeadm kubectl on all nodes
-  ```
-  sudo apt update
-  sudo apt install -y kubelet kubeadm kubectl
-  sudo apt-mark hold kubelet kubeadm kubectl
-  ```
-* Step 6: run below to join worker node to cluster
-  ```
-  kubeadm join 10.0.0.231:6443 --cri-socket unix:///var/run/cri-dockerd.sock --token fkfxh4.2srr8tc1xr7ladn1 \
-        --discovery-token-ca-cert-hash sha256:470ea5893532053f4d51ae275acb9920299e2e2744c69926f60781ce23326698
-  ```
-# Argo CD server set up
-* Step 1: execute the below commands on master node
-  ```
-  kubectl create namespace argocd
-  kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-  ```
-* Step 2: Deploy Argo CD service
-  ```
-  git clone https://github.com/krishnamaram2025/K8S.git &&  cd K8S/argocd && kubectl apply -f service.yml
-  ```
-* Step 3: To fetch default password for admin user
-  ```
-  kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}"| base64 -d
-  ```
-* Step 4: Access Argo CD UI
-  ```
-  MASTER_NODE_IP:30080
-  ```
-* Step 5: Authenticate k8s manifests repo
-  ```
-  Argo CD UI => Settings => Repositories => Connect Repo => Select HTTPs
-  ```
-# Deployments
-* Step 1: Nginx ingress server deployments manually
-  ```
-  kubectl create namespace idp
-  git clone https://github.com/nginxinc/kubernetes-ingress.git --branch v3.3.0 & cd kubernetes-ingress/deployments
-  kubectl apply -f common/ns-and-sa.yaml
-  kubectl apply -f rbac/rbac.yaml
-  kubectl apply -f common/nginx-config.yaml
-  kubectl apply -f common/ingress-class.yaml
-  kubectl apply -f common/crds/k8s.nginx.org_virtualservers.yaml
-  kubectl apply -f common/crds/k8s.nginx.org_virtualserverroutes.yaml
-  kubectl apply -f common/crds/k8s.nginx.org_transportservers.yaml
-  kubectl apply -f common/crds/k8s.nginx.org_policies.yaml
-  kubectl apply -f common/crds/k8s.nginx.org_globalconfigurations.yaml
-  kubectl apply -f daemon-set/nginx-ingress.yaml
-  ```
-* Step 2: manifests deployment from argocd 
-  ```
-  git clone https://github.com/krishnamaram2025/K8S.git &&  cd K8S/argocd && cat application.yml
-  Argo CD UI => Applications => NEW App => EDIT AS YAML => Create
-  ```
+$curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
 
-# References
+$sudo chmod +x kubectl
+
+$sudo mv kubectl /usr/bin
+
+# K8S Cluster set up using Kubeadm 
+* Step 1: install docker on all machines
   ```
-  https://www.linuxtechi.com/install-kubernetes-on-ubuntu-22-04/
-  https://github.com/cloudstones/container-orchestrator/tree/master
-  ```
+    git clone https://github.com/krishnamaram2/container-orchestrator.git
+    sudo sh container-orchestrator/src/master_worker.sh
+    https://kubernetes.io/docs/setup/production-environment/container-runtimes/#docker
+    ```
+* step 2: install kubeadm,kubectl,kubelet on all machines
+    ```
+    https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
+    ```
+* Step 3:Kubeadm initialiazation on MASTER
+    ```
+    kubeadm init
+    mkdir -p $HOME/.kube
+    sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+    sudo chown $(id -u):$(id -g) $HOME/.kube/config
+    kubeadm join 172.31.87.27:6443 --token 80lvq0.eirhf8w0cmitbtji \
+        --discovery-token-ca-cert-hash sha256:52931c998f27892d68c6bd82525f9d3160c680feb6c699d4bc6f92c25d2a9bb7
+    ```
+* Step 4: OPTIONAL : Execute below commands on MASTER to make execute commands without root user
+    ```
+    mkdir -p $HOME/.kube
+    sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+    sudo chown $(id -u):$(id -g) $HOME/.kube/config
+    ```
+* Step 5: copy form step3 and run on worker node
+    ```
+    kubeadm join 172.31.87.27:6443 --token 80lvq0.eirhf8w0cmitbtji --discovery-token-ca-cert-hash sha256:52931c998f27892d68c6bd82525f9d3160c680feb6c699d4bc6f92c25d2a9bb7 
+    ```
+* Step 6:choose a network drive for pod network  and execute below command on MASTER
+    ```
+    kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+    Reference: https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/
+    ```
+* Step 7: on master or on sandbox/bastionhost/jumphost
+    ```
+    curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+    sudo chmod +x kubectl
+    sudo mv kubectl /usr/bin
+    copy admin.conf from /etc/kubernetes/admin.conf(master node)
+    kubectl get nodes -o wide --kubeconfig admin.conf
+    ```
+* Microservices Deployments
+```
+git clone https://github.com/krishnamaram2/container-orchestrator.git
+cd container-orchestrator/src/flask
+kubectl create -f flask-kubeadm-deployment.yml
+cd container-orchestrator/src/mysql
+kubectl create -f mysql-kubeadm-deployment.yml
+```
+
+# K8S Cluster set up using Minikube(Note: Install and set up on Local Machine)
+* Step 1: Pre-Requisites
+    ```
+    curl -fsSL https://get.docker.com -o get-docker.sh
+    sudo sh get-docker.sh
+    sudo systemctl start docker
+    sudo usermod -aG docker $(whoami) 
+    sudo chmod 666 /var/run/docker.sock
+    ```
+* Step 2: Setup K8S cluster
+```
+https://minikube.sigs.k8s.io/docs/start/
+```
+* Step 3: Microservices Deployments
+```
+git clone https://github.com/krishnamaram2/container-orchestrator.git
+cd container-orchestrator/src/flask
+kubectl create -f flask-kubeadm-deployment.yml
+cd container-orchestrator/src/mysql
+kubectl create -f mysql-kubeadm-deployment.yml
+```
+
+# K8S Cluster set up using AWS EKS
+
+# K8S Cluster set up using Azure AKS
+
+# K8S Cluster set up using GCP GKE
+
+# K8S Cluster set up in Hardway
