@@ -9,7 +9,7 @@ sudo mv kubectl /usr/bin
 copy admin.conf from /etc/kubernetes/admin.conf(master node)
 kubectl get nodes -o wide --kubeconfig admin.conf
 ```
-# K8S Cluster set up using Minikube(Note: Install and set up on Local Machine)
+# K8S Cluster set up using Minikube(Local Machine)
 * Step 1: Pre-Requisites
 ```
 curl -fsSL https://get.docker.com -o get-docker.sh
@@ -22,7 +22,39 @@ sudo chmod 666 /var/run/docker.sock
 ```
 https://minikube.sigs.k8s.io/docs/start/
 ```
-# K8S Cluster set up using Kubeadm 
+# Set up Single node Kubernetes cluster
+```
+sudo yum install yum-utils -y && sudo yum install device-mapper-persistent-data -y && sudo yum install lvm2 -y
+sudo wget  https://download.docker.com/linux/centos/docker-ce.repo 
+sudo cp docker-ce.repo /etc/yum.repos.d/docer-ce.repo
+sudo yum install containerd.io-1.2.13 -y && sudo yum install docker-ce-19.03.11 -y && sudo yum install docker-ce-cli-19.03.11 -y
+sudo mkdir /etc/docker
+sudo mkdir /etc/systemd/system/docker.service.d
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+sudo vi /etc/yum.repos.d/kubernetes.repo
+  [kubernetes]
+  name=Kubernetes
+  baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-\$basearch
+  enabled=1
+  gpgcheck=1
+  repo_gpgcheck=1
+  gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+  #exclude=kubelet kubeadm kubectl
+sudo yum install kubeadm -y && sudo yum install kubectl -y && sudo yum install kebelet -y
+sudo systemctl restart kubelet
+sudo echo 1 >  /proc/sys/net/bridge/bridge-nf-call-iptables
+sudo kubeadm init
+sudo mkdir $HOME/.kube
+sudo chmod 0755 $HOME/.kube
+sudo cp /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown centos:centos $HOME/.kube/config
+sudo chmod 0755 $HOME/.kube/config
+kubectl apply -f  /home/centos/configuration-manager/src/opsstack/weavenet.yml
+kubectl taint nodes --all node-role.kubernetes.io/master-
+kubectl create -f webapp.yaml
+```
+# Set up multi node K8S Cluster using Kubeadm 
 * Step 1: install docker on all machines
 ```
 git clone https://github.com/krishnamaram2/container-orchestrator.git
