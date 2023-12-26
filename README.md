@@ -28,7 +28,7 @@ sudo chmod 666 /var/run/docker.sock
 ```
 https://minikube.sigs.k8s.io/docs/start/
 ```
-# Set up Single node Kubernetes cluster
+# Set up Single node Kubernetes cluster using Kubeadm 
 ```
 sudo yum install yum-utils -y && sudo yum install device-mapper-persistent-data -y && sudo yum install lvm2 -y
 sudo wget  https://download.docker.com/linux/centos/docker-ce.repo 
