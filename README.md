@@ -2,7 +2,7 @@
 This project is implemented to set up K8S cluster and intended to touch and feel of Micro Services architecture with containerized apps.
 # Infrastructure Set Up
 ```
-https://github.com/krishnamaram2025/Terraform/blob/master/README.md
+https://github.com/krishnamaram2025/Terraform/blob/master/gcp/README.md
 ```
 # K8S Cluster setup using kubeadm tool
 # Single node K8S cluster
