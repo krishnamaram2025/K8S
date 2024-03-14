@@ -161,5 +161,6 @@ kubeadm join 10.0.0.231:6443 --cri-socket unix:///var/run/cri-dockerd.sock --tok
 ```
 # Testing
 ```
-kubectl get nodes -o wide
+vi C:\Windows\System32\drivers\etc\hosts
+WORKER_NODE_IP DOMAIN_NAME
 ```
