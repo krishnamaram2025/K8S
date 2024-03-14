@@ -89,6 +89,29 @@ kubeadm join 10.0.0.231:6443 --token fkfxh4.2srr8tc1xr7ladn1 \
 kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico.yaml
 ```
 # On Worker nodes
+* Step 1: Disable Swap, Add kernel Parameters and load kernal modules 
+```
+sudo swapoff -a && sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+```
+```
+sudo tee /etc/modules-load.d/containerd.conf <<EOF
+overlay
+br_netfilter
+EOF
+```
+```
+sudo modprobe overlay && sudo modprobe br_netfilter
+```
+```
+sudo tee /etc/sysctl.d/kubernetes.conf <<EOF
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+net.ipv4.ip_forward = 1
+EOF
+```
+```
+sudo sysctl --system && echo 1 > /proc/sys/net/ipv4/ip_forward
+```
 * Step 2: Install Docker
 ```
 https://docs.docker.com/engine/install/debian/
