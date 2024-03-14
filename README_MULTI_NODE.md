@@ -1,10 +1,10 @@
 # Title
-This project is implemented to set up Multi node K8S cluster and intended to touch and feel of Micro Services architecture with containerized apps.
+This project is implemented to set up Multi node K8S cluster using Kubeadm tool and intended to touch and feel of Micro Services architecture with containerized apps.
 # Infrastructure Set Up
 ```
 https://github.com/krishnamaram2025/Terraform/blob/master/gcp/README.md
 ```
-# K8S Cluster setup using kubeadm tool
+# On Master Nodes
 * Step 1: Disable Swap, Add kernel Parameters and load kernal modules 
 ```
 sudo swapoff -a && sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
@@ -135,4 +135,8 @@ sudo apt-mark hold kubelet kubeadm kubectl
 ```
 kubeadm join 10.0.0.231:6443 --cri-socket unix:///var/run/cri-dockerd.sock --token fkfxh4.2srr8tc1xr7ladn1 \
      --discovery-token-ca-cert-hash sha256:470ea5893532053f4d51ae275acb9920299e2e2744c69926f60781ce23326698
+```
+# Testing
+```
+kubectl get nodes -o wide
 ```
