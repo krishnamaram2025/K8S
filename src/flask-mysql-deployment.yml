@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-mysql-deployment
+spec:
+  selector:
+    matchLabels:
+      app: flask-mysql
+      tier: 2tier
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: flask-mysql
+        tier: 2tier
+    spec:
+      containers:
+      - image: krishnamaram2/flask:k8s_1
+        name: flask
+        env:
+        - name: MYSQL_HOST
+          value: mysql-service
+        ports:
+        - containerPort: 5001
+      - image: krishnamaram2/mysql:k8s_1
+        name: mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: Root_123
+        ports:
+        - containerPort: 3306
+          name: mysql

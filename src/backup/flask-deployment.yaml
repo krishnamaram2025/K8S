@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: php-service
+spec:
+  ports:
+    - port: 5001
+  selector:
+    app: php
+    tier: frontend
+  type: LoadBalancer
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-deployment
+spec:
+  selector:
+    matchLabels:
+      app: php
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: php
+        tier: frontend
+    spec:
+      containers:
+      - image: csporg/flask:jo
+        name: php-container
+        env:
+        - name: MYSQL_HOST
+          value: mysql-service
+        ports:
+        - containerPort: 5001

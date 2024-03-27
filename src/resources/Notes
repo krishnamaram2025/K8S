@@ -1,0 +1,440 @@
+to list containers in flask pod
+
+kubectl describe pod/flask-pod
+
+to login to flask container
+
+kubectl exec -it flask-pod --container flask -- /bin/bash
+
+
+
+to list containers in  mysql pod
+
+kubectl describe pod/mysql-pod
+
+to login to mysql container
+
+kubectl exec -it mysql-pod --container mysql -- /bin/bash
+
+
+
+
+
+
+
+Terminology
+ Pods(automatic unit of scheduling)
+ Services(stable networking)
+  Replication controller(scale pods,desired state)
+   Replica sets
+Kubectl(client)
+Deployments=> rc + rolling updates, roll back
+Master components
+Cluster store(database/memory)
+Kube-scheduler(creation of containers will be don)
+Kube-controller-manager(maintaining state)
+Kube-apiserver(for all external communication)
+
+Node components
+Kubelet(agent)
+Kubeproxy(manage networking)
+Container engine(docker)
+
+
+
+What is pod vs service?
+=>pod is a physical entity
+=>pod have ip
+=>service is a logical entity
+=>service has ip address and dns-db.myservice
+=>service use the concept called label
+7.what is the difference between ReplicationController and ReplicationSet?
+ReplicationController=>how many replicas do you want
+rc= pods * n
+What is service vs deployment?
+=>what is that you want in a pod gol:1.0 8080
+=>ask how many pods you want
+=>save it with some version
+=>strategy
+create 1 new pod
+remove 1 old pod
+=>there is no downtime
+=>deployment and rc both are doing same but deployment maintains revisions
+=>ReplicationSets are created(it remember old state, it can store and maintain the state)
+
+
+
+
+Kubeadm installation
+Master=>
+Step 1: install docker runtine
+Step 2:install kubeadm,kubectl,kubelet
+Step 3: kubeadm init(to make this node a master)
+Step 4: create virtual network i.e weave net(it is responsible to create pod network on multiple nodes
+Woker=>
+Step 1 and 2 repeat
+Step 3: join worker to cluster
+Kubeadm join 
+
+
+
+
+$vi pod.yml
+apiVersion: v1
+kind: Pod (kind tells what is that you want to create like Pod)
+metadata:             (information about pod like name of pod is my-pod)
+    name: web-pod
+    labels:
+      env: test
+      server: web 
+spec:                    =>specifications=> to specify any kubernetes objects
+    containers:
+    - name: tomcat
+      image: tomcat
+      ports:
+      - containerPort:8080
+
+
+
+
+vi rc.yml
+apiVersion: v1
+kind: ReplicationController
+metadata:
+ name: myrc
+spec:
+    replicas: 2
+    selector: (the way of telling label)
+      server: web
+    template: =>template describe about pod (if one object has in other object that is called as template)
+      metadata:
+        labels:
+           env: Test
+           server: web
+      spec:
+         containers:
+         - name: nginx
+           image: nginx
+           ports:
+           - containerPort: 80
+           
+           
+           
+           
+           
+           vi svc.yml
+apiVersion: v1
+kind: Service
+metadata:
+   name: simple-svc
+spec:
+   selector:(will ask all the pods which are running with web)
+     server: web
+   type: NodePort
+   ports:
+   - name: http
+     port: 80 (service uses port 80)
+     nodePort: 30001 (this is exposed at node level)
+     protocol: TCP
+
+
+
+
+
+vi deployment.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  my-deployment
+spec:
+  replicas: 3
+  minReadySeconds: 20(to bring the pod in how many seconds, we have to put this according application)
+  strategy: (how to deploy means to kill old version and make run new version)
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:(the way of telling label)
+    matchLabels:
+      app: tomcat
+  template:(is nothing but pod)
+    metadata:
+      labels:
+        app: tomcat
+    spec:
+      hostNetwork: true
+      containers:
+      - name: web
+        image: tomcat
+        
+        ports:
+        - containerPort: 80
+
+
+
+
+
+Commands
+$kubectl apply -f deploy.yml --record (--record is used to store version)
+$kubectl get deploy
+$kubectl get rs
+$kubectl get pods
+fot testing
+public-ip:80
+image: nginx
+#image: httpd
+after change in deploy.yml file
+$kubectl apply -f deploy.yml --record
+$kubectl rollout status deployments my-deployment
+$kubectl get deploy my-deployment
+$kubectl rollout history deployments my-deployment
+
+
+
+Intsalling the hard way
+
+Mater Nodes
+Etcd:
+wget https://github.com/coreos/etcd/releases/download/v3.3.9/etcd-v3.3.9-linux-amd64.tar.gz
+sudo tar -xvf etcd-v3.3.9-linux-amd64.tar.gz 
+sudo mv etcd-v3.3.9-linux-amd64/etcd* /usr/local/bin/ 
+sudo vi /etc/systemd/system/etcd.service
+[Unit] 
+Description=ETCD 
+[Service] 
+User=centos
+ WorkingDirectory=/usr/local/bin
+ ExecStart=/usr/local/bin/etcd
+Restart=always 
+[Install] 
+WantedBy=multi-user.target
+
+Sudo mkdir default.etcd
+Sudo chown centos:centos default.etcd
+sudo systemctl daemon-reload
+sudo systemctl enable etcd.service
+ 
+ 
+ 
+ Server components
+wget https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kube-apiserver
+wget  "https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kube-controller-manager" 
+wget  "https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kube-scheduler"  
+sudo chmod +x kube-apiserver kube-controller-manager kube-scheduler 
+sudo mv kube-apiserver kube-controller-manager kube-scheduler  /usr/local/bin/ 
+Note:
+KUBERNETES_SERVICE_HOST and KUBERNETES_SERVICE_PORT in /etc/systemd/system/kube-controller-manager.service
+
+kubectl apply -f https://raw.githubusercontent.com/mmumshad/kubernetes-the-hard-way/master/deployments/coredns.yaml
+
+Client components
+wget https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kubectl
+chmod +x kubectl
+sudo mv kubectl /usr/local/bin/
+
+
+
+Worker nodes
+Docker must be installed
+wget https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kube-proxy 
+wget https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kubelet
+chmod +x  kube-proxy kubelet
+sudo  mv  kube-proxy kubelet /usr/local/bin/
+
+
+Install CNI plugins
+wget https://github.com/containernetworking/plugins/releases/download/v0.7.5/cni-plugins-amd64-v0.7.5.tgz
+sudo tar -xzvf cni-plugins-amd64-v0.7.5.tgz --directory /opt/cni/bin/
+
+kubectl apply -f https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')
+
+
+
+Syllabus
+
+Core concepts(image,container,pods,services,deployments,replica sets, replication controllers)
+Installation,conafiguration and validation
+Computing(Containers)
+Storage
+Networking
+Security
+Monitoring
+Logging
+Cluster maintenance
+Troubleshooting
+Advance concepts(Application Life cycle management+ Scheduling + Multi-container pods + Observability + Pod design +  State persistence)
+
+
+
+Terminology
+Container
+Pods(automatic unit of scheduling)
+Services(stable networking)
+Deployments=> rc + rolling updates, roll back
+Replication controller(scale pods,desired state)
+Replica sets
+Kubectl(client)
+YAML
+Controller manager = node controller + replication controller
+Master components
+Cluster store(database/memory)
+Kube-scheduler(creation of containers will be done like timer, scheduling of apps and containers on nodes)
+Kube-controller-manager(functioning like node controller and replication controller)
+Kube-apiserver(It exposes APIs for all external communication)
+
+Node components
+Kubelet(agent, that listens instructions)
+Kubeproxy(manage networking, enabling communication between services within the cluster)
+Container engine(docker)
+
+
+We can create pods in two ways
+1.Using imperative commands
+2.Using declarative way (using yaml files)
+
+$kubectl run <pod_name> --image=<image_name> -l(label) key=value
+
+
+
+
+Namespaces list
+1.Default  2.Kube-system    3.Kube-public
+
+DNS entry
+Service for MySQL DB : db-service.dev.svc.cluster.local”)
+db-service = service name
+dev = namespace
+svc = service
+cluster.local = domain name
+
+
+Namespaces list
+1.Default  2.Kube-system    3.Kube-public
+
+DNS entry
+Service for MySQL DB : db-service.dev.svc.cluster.local”)
+db-service = service name
+dev = namespace
+svc = service
+cluster.local = domain name
+
+
+
+
+$kubectl create namespace dev(creating namespace dev)
+$kubectl get namespace –no-headers | wc –l    OR    $jubectl get ns –no-headers | wc –l ( to list number of namespaces) 
+Kubectl get pods ( to list pods in default namespace)
+Kubectl get pods –namespace=kube-system(to list pods in kube-system namespace)
+$kubectl get pods –all-namespaces(to list all the pods in all the namespaces)
+$kubectl –n <namespace_name> get pods or $kubectl get pods –namespace=<namespace_name>(to list number of pods in the specific namespace)
+
+Kubectl config set-context $(kubectl config current-context) –namespace=dev
+
+
+Namespace creation 
+1.Create pod in the specific namespace using imperative command
+
+2.Create pod in the specific name using yaml file
+Kubectl run redis –image=redis –restart=Never –dry-run –o yaml > pod.yaml
+$vi pod.yaml
+metada:
+    namespace: <namespace_name>
+
+
+
+
+PODS
+=>Kubernetes doesn’t deploy containers directly on the worker nodes
+=>the containers are encapsulated into a k8s object known as PODS
+=>a Pod is a single  instance of a application
+=>a pod is smallest object that you can create in k8s
+=>we can launch more than one conatiners : usually launch 1.main container 2.Helper container(for logging purpose) 
+
+4 Top level elements for POD creation
+apiVersion:  v1(this is the version of k8s api to create the object)
+kind: Pod ( type of object : (pod,service,deployment,replica set)
+metadata:( key-value pairs, child metadata also there, pod name  lables used to identify object)
+   name: <pod_name>
+Spec:
+    containers: (List/array type because we can store more than one container within the pod)
+        - name: <container_name)
+          image: <image_name>
+Note: metadata and spec is a dictionary
+
+Kind                     Version
+Pod                          v1
+Service                    v1
+ReplicaSet                apps/v1
+Deployment           apps/v1
+
+
+
+Get ll pods in default namespace
+$kubectl get pods Create nginx pod with image nginx
+$kubectl run nginx –image=nginx
+How to know which image used to create nginx pod
+$kubectl describe pod nginx 
+How to know which pods are placed on which nodes
+$kubectl  get pods –o wide
+Find out number of containers per pod
+$kubectl describe pod <podname>
+Delete pod
+$kubectl delete <pod_name>
+How to update pod definition file
+$kubectl edit pod <pod_name>
+$kubectl get pod <pod_name> -o yaml > pod.yaml(to write as yaml file)
+
+
+
+=>It is used to implement high availability, load balancing(to share loads),auto  scaling
+=>Replication controller replaced by replica set
+=>Selector is measure diff in ReplicationController and ReplicaSet
+=>Selectors and labels are used in monitoring
+
+
+
+$Kubectl scale –replicas=6 –f replicaset-definition.yml
+$Kubectl scale –replicas=6 replicaset/rs  <replicaset_name>
+$Kubectl get rs new-replica-set –o yaml
+$Kubectl get replicaset/rs
+$Kubectl describe replicaset/rs
+$Kubectl edit replicaset <replicaset_name>
+$Kubectl replace –f replicaset-definition.yml
+
+
+
+Service types:
+NodePort
+ClusterIP
+LoadBalancer
+
+
+Kubectl get services/svc(to find the number of service)
+Kubectl describe svc kubernetes(to find target port for kuberntetes service)
+Kubectl describe deployments. simple-webapp-deployment | grep –i image
+Kubectl describe svc(to find labels and endpoints)
+Kubectl expose deployment simple-webapp-deployment –type=NodePort –target-port=8080 –target-port=8080 –name=webapp-service –dry-run –o yaml > svc.yaml
+
+Kubectl apply –f svc.yml
+
+Kubectl get ep webapp-service( to get end points)
+
+$kubectl expose pod redis –port=6379 –name redis-service
+
+
+Kubectl get deployment
+Kubectl get all 
+Kubectl describe deployment
+
+
+$kubectl create deployment webapp –image=<image_name>
+$kubectl scale deployment webapp –replicas=3
+
+
+
+
+LABELS AND SELECTORS
+$kubectl get pods –selector env=dev(total number of pods in dev environment)
+$kubectl get all –selector env=prod(total nu,mber of objects in prod environment
+
+
