@@ -1,0 +1,27 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+  namespace: myapp
+  annotations:
+    # nginx.org/client-max-body-size: "10m"
+    # nginx.org/location-snippets: |
+    #   add_header Last-Modified $date_gmt;
+    #   add_header Cache-Control 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0';
+    #   if_modified_since off;
+    #   expires off;
+    #   etag off;
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: ramutech.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: angular-ui-svc
+                port:
+                  number: 80
